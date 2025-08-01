@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EchoVerse Voice Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f9f9f9; }
+        h1 { color: #333; }
+        textarea { width: 100%; height: 120px; }
+        select, input[type="file"], button { margin: 10px 0; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px #ccc; }
+        .columns { display: flex; gap: 20px; }
+        .column { flex: 1; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🎙 EchoVerse - Voice Generator</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <label>Enter your text:</label>
+        <textarea name="text_input">{{ original_text }}</textarea>
+
+        <p><strong>OR</strong> upload a .txt file:</p>
+        <input type="file" name="file_input" accept=".txt">
+
+        <label for="tone">Select tone:</label>
+        <select name="tone" required>
+            <option value="Neutral" {% if request.form.tone == "Neutral" %}selected{% endif %}>Neutral</option>
+            <option value="Suspenseful" {% if request.form.tone == "Suspenseful" %}selected{% endif %}>Suspenseful</option>
+            <option value="Inspiring" {% if request.form.tone == "Inspiring" %}selected{% endif %}>Inspiring</option>
+        </select>
+
+        <label for="voice">Select voice:</label>
+        <select name="voice" required>
+            <option value="en-US_AllisonV3Voice" {% if request.form.voice == "en-US_AllisonV3Voice" %}selected{% endif %}>Allison (US Female)</option>
+            <option value="en-US_MichaelV3Voice" {% if request.form.voice == "en-US_MichaelV3Voice" %}selected{% endif %}>Michael (US Male)</option>
+            <option value="en-US_LisaV3Voice" {% if request.form.voice == "en-US_LisaV3Voice" %}selected{% endif %}>Lisa (US Female)</option>
+        </select>
+
+        <br><button type="submit">🎧 Generate Voice</button>
+    </form>
+
+    {% if rewritten_text %}
+        <h2>📝 Text Comparison</h2>
+        <div class="columns">
+            <div class="column">
+                <h4>Original Text</h4>
+                <textarea readonly>{{ original_text }}</textarea>
+            </div>
+            <div class="column">
+                <h4>Tone: {{ request.form.tone }}</h4>
+                <textarea readonly>{{ rewritten_text }}</textarea>
+            </div>
+        </div>
+
+        <h2>🔊 Audio Output</h2>
+        <audio controls>
+            <source src="{{ url_for('static', filename='output.mp3') }}" type="audio/mp3">
+            Your browser does not support the audio element.
+        </audio>
+
+        <br><br>
+        <a href="{{ url_for('download') }}" download>
+            <button>⬇ Download MP3</button>
+        </a>
+    {% endif %}
+</div>
+</body>
+</html>
